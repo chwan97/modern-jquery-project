@@ -1,0 +1,11 @@
+<meta charset="UTF-8">
+<meta name="viewport"
+      content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+<meta http-equiv="X-UA-Compatible" content="ie=edge">
+
+<title><%= title || 'index' %></title>
+<!-- 当前页面的css会默认插入，非当前页面才需要手动引入 -->
+<link rel="stylesheet" href="<# resolve('../../../stylesheets/application.scss') #>">
+
+<!-- favicon -->
+<link rel="icon" href="<# resolve('../../../public/favicon.png') #>" sizes="32x32" type="image/png">

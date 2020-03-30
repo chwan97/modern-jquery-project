@@ -3,18 +3,17 @@
 <head>
   <%-
   include('./layouts/head/_head', {
-    title: '主页',
+  title: '关于',
   }); %>
   <link rel="stylesheet" href="<# resolve('../stylesheets/date/index.scss') #>">
 </head>
 <body>
 <%- include('./layouts/header/_header'); %>
 
-<span class="main">
-  这是一段红色、粗体，有边框的字。
-  <span class="date">2020/3/30</span>
+<span class="nav">
+  关于
 </span>
-</span>
+
 
 <%- include('./layouts/footer/_footer'); %>
 </body>
