@@ -16,7 +16,7 @@ function clean() {
 
 function replaceRelativePath() {
   return gulp.src([
-    'app/views/**/_*.ejs',
+    'app/views/**/*.ejs',
   ])
     .pipe(data(function (file) {
       return {
@@ -32,13 +32,14 @@ function replaceRelativePath() {
       escape: /<#-([\s\S]+?)#>/g,
       interpolate: /<#=([\s\S]+?)#>/g
     }))
+    .pipe(gulp.dest("temp"))
     .pipe(gulpIgnore.exclude('app/views/**/_*.ejs'))
 }
 
 function render() {
   return gulp.src([
-    'app/views/**/*.ejs',
-    '!app/views/**/_*.ejs',
+    'temp/**/*.ejs',
+    '!temp/**/_*.ejs',
   ])
     .pipe(debug({title: 'handler html:'}))
     .pipe(ejs())
