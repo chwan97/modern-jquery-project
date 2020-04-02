@@ -8,14 +8,6 @@ var cleanCSS = require('gulp-clean-css');
 var csso = require('gulp-csso');
 var del = require('del');
 
-var ejs = require("gulp-ejs")
-
-gulp.src("./templates/*.ejs")
-  .pipe(ejs({
-    msg: "Hello Gulp!"
-  }))
-  .pipe(gulp.dest("./dist"))
-
 var paths = {
   styles: {
     src: 'src/stylesheets/**/*.css',

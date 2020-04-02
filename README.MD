@@ -17,7 +17,7 @@ webpack的主要目的是用于打包重交互的JavaScript应用程序，而不
 基本的分工就是gulp等同于asset pipeline，用于静态资源 images、CSS、字体的处理，而webpack用于JavaScript依赖打包。
 
 这时候我们的构建系统需要实现的功能是 资源定位、文件指纹、源码预处理、压缩资源、CssSprite图片合并、CDN host替换、打包dist、非覆盖发布、开发环境文件监
-听、浏览器自动刷新。
+听、浏览器自动刷新等。
 
 这些需求在现代的开源工具下，都有完善实现的功能。现在开始，你需要做的就是配置他们。
 
@@ -56,6 +56,8 @@ gulp-rev-replace  Rev重命名后替换html中源文件的名字。
 gulp-htmlmin  压缩html中能够压缩的字符。
 
 gulp-autoprefixer 自动添加厂商前缀
+
+gulp-preprocess 通过配置对文件js html css 中的标记(标记可以比较可以进行简单的判断 引入 输出) 进行预处理
 
 参考gitlab，打包过后的js放在 assets/webpack/，文件名为emoji.de2dcb00f0bc66cae573.chunk.js，由文件夹+.+文件名字 + 十四位hash
  分割+chunk，源文件+bundle + .js。

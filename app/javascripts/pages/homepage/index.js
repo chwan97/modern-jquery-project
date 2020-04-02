@@ -1,5 +1,5 @@
 // import $ from "jquery";
-import { getDate } from './getDate';
+import { nowDate } from './getDate';
 
 
-console.log(getDate);
+console.log(nowDate);
