@@ -1,5 +1,4 @@
 var path = require("path");
-var process = require("process");
 
 var gulp = require('gulp');
 var del = require('del');
