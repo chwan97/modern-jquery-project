@@ -1,5 +1,6 @@
 const path = require('path');
 const glob = require('glob');
+
 const webpack = require('webpack');
 const StatsWriterPlugin = require('webpack-stats-plugin').StatsWriterPlugin;
 const CompressionPlugin = require('compression-webpack-plugin');
@@ -10,7 +11,6 @@ const CACHE_PATH = process.env.WEBPACK_CACHE_PATH || path.join(ROOT_PATH, 'tmp/c
 const IS_PRODUCTION = process.env.NODE_ENV === 'production';
 
 const IS_DEV_SERVER = process.argv.join(' ').indexOf('webpack-dev-server') !== -1;
-const IS_EE = require('./helpers/is_ee_env');
 const DEV_SERVER_HOST = process.env.DEV_SERVER_HOST || 'localhost';
 const DEV_SERVER_PORT = parseInt(process.env.DEV_SERVER_PORT, 10) || 3808;
 const DEV_SERVER_LIVERELOAD = IS_DEV_SERVER && process.env.DEV_SERVER_LIVERELOAD !== 'false';
@@ -29,9 +29,9 @@ function generateEntries() {
   const autoEntries = {};
   const autoEntriesMap = {};
   const pageEntries = glob.sync('pages/**/index.js', {
-    cwd: path.join(ROOT_PATH, 'app/assets/javascripts'),
+    cwd: path.join(ROOT_PATH, 'app/javascripts'),
   });
-  watchAutoEntries = [path.join(ROOT_PATH, 'app/assets/javascripts/pages/')];
+  watchAutoEntries = [path.join(ROOT_PATH, 'app/javascripts/pages/')];
 
   function generateAutoEntries(path, prefix = '.') {
     const chunkPath = path.replace(/\/index\.js$/, '');
@@ -40,15 +40,7 @@ function generateEntries() {
   }
 
   pageEntries.forEach(path => generateAutoEntries(path));
-
-  if (IS_EE) {
-    const eePageEntries = glob.sync('pages/**/index.js', {
-      cwd: path.join(ROOT_PATH, 'ee/app/assets/javascripts'),
-    });
-    eePageEntries.forEach(path => generateAutoEntries(path, 'ee'));
-    watchAutoEntries.push(path.join(ROOT_PATH, 'ee/app/assets/javascripts/pages/'));
-  }
-
+  
   const autoEntryKeys = Object.keys(autoEntriesMap);
   autoEntriesCount = autoEntryKeys.length;
 
@@ -65,12 +57,8 @@ function generateEntries() {
     autoEntries[entry] = defaultEntries.concat(entryPaths);
   });
 
-  const manualEntries = {
-    default: defaultEntries,
-    raven: './raven/index.js',
-  };
 
-  return Object.assign(manualEntries, autoEntries);
+  return autoEntries;
 }
 
 const alias = {
@@ -87,27 +75,17 @@ const alias = {
   ee_else_ce: path.join(ROOT_PATH, 'app/assets/javascripts'),
 };
 
-if (IS_EE) {
-  Object.assign(alias, {
-    ee: path.join(ROOT_PATH, 'ee/app/assets/javascripts'),
-    ee_empty_states: path.join(ROOT_PATH, 'ee/app/views/shared/empty_states'),
-    ee_icons: path.join(ROOT_PATH, 'ee/app/views/shared/icons'),
-    ee_images: path.join(ROOT_PATH, 'ee/app/assets/images'),
-    ee_spec: path.join(ROOT_PATH, 'ee/spec/javascripts'),
-    ee_else_ce: path.join(ROOT_PATH, 'ee/app/assets/javascripts'),
-  });
-}
 
 module.exports = {
   mode: IS_PRODUCTION ? 'production' : 'development',
 
-  context: path.join(ROOT_PATH, 'app/assets/javascripts'),
+  context: path.join(ROOT_PATH, 'app/javascripts'),
 
   entry: generateEntries,
 
   output: {
-    path: path.join(ROOT_PATH, 'public/assets/webpack'),
-    publicPath: '/assets/webpack/',
+    path: path.join(ROOT_PATH, 'dist/assets/js'),
+    publicPath: 'dist/assets/js/',
     filename: IS_PRODUCTION ? '[name].[chunkhash:8].bundle.js' : '[name].bundle.js',
     chunkFilename: IS_PRODUCTION ? '[name].[chunkhash:8].chunk.js' : '[name].chunk.js',
     globalObject: 'this', // allow HMR and web workers to play nice
@@ -122,84 +100,11 @@ module.exports = {
     strictExportPresence: true,
     rules: [
       {
-        type: 'javascript/auto',
-        test: /\.mjs$/,
-        use: [],
-      },
-      {
         test: /\.js$/,
-        exclude: path => /node_modules|vendor[\\/]assets/.test(path) && !/\.vue\.js/.test(path),
+        exclude: path => /node_modules/.test(path) && !/\.vue\.js/.test(path),
         loader: 'babel-loader',
         options: {
           cacheDirectory: path.join(CACHE_PATH, 'babel-loader'),
-        },
-      },
-      {
-        test: /\.vue$/,
-        loader: 'vue-loader',
-        options: {
-          cacheDirectory: path.join(CACHE_PATH, 'vue-loader'),
-          cacheIdentifier: [
-            process.env.NODE_ENV || 'development',
-            webpack.version,
-            VUE_VERSION,
-            VUE_LOADER_VERSION,
-          ].join('|'),
-        },
-      },
-      {
-        test: /\.(graphql|gql)$/,
-        exclude: /node_modules/,
-        loader: 'graphql-tag/loader',
-      },
-      {
-        test: /\.svg$/,
-        loader: 'raw-loader',
-      },
-      {
-        test: /\.(gif|png)$/,
-        loader: 'url-loader',
-        options: { limit: 2048 },
-      },
-      {
-        test: /\_worker\.js$/,
-        use: [
-          {
-            loader: 'worker-loader',
-            options: {
-              name: '[name].[hash:8].worker.js',
-              inline: IS_DEV_SERVER,
-            },
-          },
-          'babel-loader',
-        ],
-      },
-      {
-        test: /\.(worker(\.min)?\.js|pdf|bmpr)$/,
-        exclude: /node_modules/,
-        loader: 'file-loader',
-        options: {
-          name: '[name].[hash:8].[ext]',
-        },
-      },
-      {
-        test: /.css$/,
-        use: [
-          'vue-style-loader',
-          {
-            loader: 'css-loader',
-            options: {
-              name: '[name].[hash:8].[ext]',
-            },
-          },
-        ],
-      },
-      {
-        test: /\.(eot|ttf|woff|woff2)$/,
-        include: /node_modules\/katex\/dist\/fonts/,
-        loader: 'file-loader',
-        options: {
-          name: '[name].[hash:8].[ext]',
         },
       },
     ],
@@ -248,12 +153,6 @@ module.exports = {
       },
     }),
 
-    // enable vue-loader to use existing loader rules for other module types
-    new VueLoaderPlugin(),
-
-    // automatically configure monaco editor web workers
-    new MonacoWebpackPlugin(),
-
     // prevent pikaday from including moment.js
     new webpack.IgnorePlugin(/moment/, /pikaday/),
 
@@ -262,18 +161,7 @@ module.exports = {
       $: 'jquery',
       jQuery: 'jquery',
     }),
-
-    new webpack.NormalModuleReplacementPlugin(/^ee_component\/(.*)\.vue/, function(resource) {
-      if (Object.keys(module.exports.resolve.alias).indexOf('ee') >= 0) {
-        resource.request = resource.request.replace(/^ee_component/, 'ee');
-      } else {
-        resource.request = path.join(
-          ROOT_PATH,
-          'app/assets/javascripts/vue_shared/components/empty_component.js',
-        );
-      }
-    }),
-
+    
     // compression can require a lot of compute time and is disabled in CI
     IS_PRODUCTION && !NO_COMPRESSION && new CompressionPlugin(),
 
@@ -316,10 +204,6 @@ module.exports = {
         reportFilename: path.join(ROOT_PATH, 'webpack-report/index.html'),
         statsFilename: path.join(ROOT_PATH, 'webpack-report/stats.json'),
       }),
-
-    new webpack.DefinePlugin({
-      'process.env.IS_GITLAB_EE': JSON.stringify(IS_EE),
-    }),
   ].filter(Boolean),
 
   devServer: {

@@ -5,7 +5,10 @@
   "main": "none",
   "scripts": {
     "dev": "gulp --gulpfile config/gulpfile.js --cwd ./",
-    "build": "gulp"
+    "build": "gulp",
+    "webpack": "webpack --config config/webpack.config.js",
+    "dev-server": "nodemon -w 'config/webpack.config.js' --exec 'webpack-dev-server --config config/webpack.config.js'",
+    "webpack-prod": "cross-env NODE_ENV=production webpack --config config/webpack.config.js"
   },
   "keywords": [
     "gulp",
@@ -17,6 +20,15 @@
   "license": "MIT",
   "devDependencies": {
     "@babel/core": "^7.9.0",
+    "@babel/plugin-proposal-class-properties": "^7.8.3",
+    "@babel/plugin-proposal-json-strings": "^7.8.3",
+    "@babel/plugin-proposal-private-methods": "^7.8.3",
+    "@babel/plugin-syntax-dynamic-import": "^7.8.3",
+    "@babel/plugin-syntax-import-meta": "^7.8.3",
+    "@babel/preset-env": "^7.9.0",
+    "babel-loader": "^8.1.0",
+    "compression-webpack-plugin": "^3.1.0",
+    "cross-env": "^7.0.2",
     "del": "^5.1.0",
     "gulp": "^4.0.2",
     "gulp-babel": "^8.0.0",
@@ -29,11 +41,18 @@
     "gulp-ignore": "^3.0.0",
     "gulp-less": "^4.0.1",
     "gulp-rename": "^2.0.0",
+    "gulp-rev": "^9.0.0",
     "gulp-rev-all": "^2.0.3",
     "gulp-sass": "^4.0.2",
     "gulp-template": "^5.0.0",
     "gulp-uglify": "^3.0.2",
-    "node-sass": "^4.13.1"
+    "node-sass": "^4.13.1",
+    "nodemon": "^2.0.2",
+    "webpack": "^4.42.1",
+    "webpack-bundle-analyzer": "^3.6.1",
+    "webpack-cli": "^3.3.11",
+    "webpack-dev-server": "^3.10.3",
+    "webpack-stats-plugin": "^0.3.1"
   },
   "dependencies": {
     "jquery": "^3.4.1",
