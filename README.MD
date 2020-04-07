@@ -129,7 +129,21 @@ optimization: {
       },
     },
   },
-  
+ 
+相对路径支持： 
+一般出现相对路径的情形为 ejs中相对路径 scss中相对路径，如果支持就不太好处理。
+所以可以用一种简易的绝对路径来支持，比如默认替换一些引用路径。
+
+public 为 /app/public 的缩写
+stylessheet 为 /app/stylessheets的缩写
+fonts icons 同理。
+
+本地开发路径与打包结果对应关系为
+ejs 转成 html 直接移动到 dist
+scss 转成 css 放到 asset/css 下，原stylesheets下的文件夹结构转化为 文件夹.文件名结构。
+fonts icons images 同理。
+
+在资源放到dist前一步，通过正则匹配 gulp-replace插件替换约定的标记值。之后再通过rev加版本。
  
 错误处理分为两种情形：
 1. 纯前端处理

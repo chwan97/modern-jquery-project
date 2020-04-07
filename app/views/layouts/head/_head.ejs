@@ -5,7 +5,6 @@
 
 <title><%= title || 'index' %></title>
 <!-- 当前页面的css会默认插入，非当前页面才需要手动引入 -->
-<link rel="stylesheet" href="<#= resolve('../../../stylesheets/application.scss') #>">
-
-<!-- favicon -->
-<link rel="icon" href="<#= resolve('../../../public/favicon.png') #>" sizes="32x32" type="image/png">
+<link rel="stylesheet" href="stylesheets/application.scss">
+<!-- inject page css -->
+<link rel="icon" href="public/favicon.png" sizes="32x32" type="image/png">

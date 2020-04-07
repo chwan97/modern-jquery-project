@@ -1,1 +1,1 @@
-export const nowDate = Date().now();
+export const nowDate = Date.now();

@@ -5,7 +5,6 @@
   include('./layouts/head/_head', {
   title: '关于',
   }); %>
-  <link rel="stylesheet" href="<#= resolve('../stylesheets/date/index.scss') #>">
 </head>
 <body>
 <%- include('./layouts/header/_header'); %>
@@ -16,5 +15,6 @@
 
 
 <%- include('./layouts/footer/_footer'); %>
+<%- include('./layouts/scriptTags/_page-script-tag.ejs'); %>
 </body>
 </html>

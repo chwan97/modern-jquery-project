@@ -1,8 +1,12 @@
 var gulp = require('gulp');
 var del = require('del');
+var sass = require('gulp-sass');
 process.env.NODE_ENV = 'production';
 const webpack = require('webpack');
+
 const config = require('./webpack.config')
+
+sass.compiler = require('node-sass');
 
 
 function clean() {

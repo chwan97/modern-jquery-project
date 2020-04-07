@@ -56,25 +56,8 @@ function generateEntries() {
     }
     autoEntries[entry] = defaultEntries.concat(entryPaths);
   });
-
-
   return autoEntries;
 }
-
-const alias = {
-  '~': path.join(ROOT_PATH, 'app/assets/javascripts'),
-  emojis: path.join(ROOT_PATH, 'fixtures/emojis'),
-  empty_states: path.join(ROOT_PATH, 'app/views/shared/empty_states'),
-  icons: path.join(ROOT_PATH, 'app/views/shared/icons'),
-  images: path.join(ROOT_PATH, 'app/assets/images'),
-  vendor: path.join(ROOT_PATH, 'vendor/assets/javascripts'),
-  vue$: 'vue/dist/vue.esm.js',
-  spec: path.join(ROOT_PATH, 'spec/javascripts'),
-
-  // the following resolves files which are different between CE and EE
-  ee_else_ce: path.join(ROOT_PATH, 'app/assets/javascripts'),
-};
-
 
 module.exports = {
   mode: IS_PRODUCTION ? 'production' : 'development',
@@ -84,8 +67,8 @@ module.exports = {
   entry: generateEntries,
 
   output: {
-    path: path.join(ROOT_PATH, 'dist/assets/js'),
-    publicPath: 'dist/assets/js/',
+    path: path.join(ROOT_PATH, 'dist/asset/js'),
+    publicPath: 'dist/asset/js/',
     filename: IS_PRODUCTION ? '[name].[chunkhash:8].bundle.js' : '[name].bundle.js',
     chunkFilename: IS_PRODUCTION ? '[name].[chunkhash:8].chunk.js' : '[name].chunk.js',
     globalObject: 'this', // allow HMR and web workers to play nice
@@ -93,7 +76,15 @@ module.exports = {
 
   resolve: {
     extensions: ['.js', '.gql', '.graphql'],
-    alias,
+    alias: {
+      '~': path.join(ROOT_PATH, 'app/javascripts'),
+      // alias 只能替换 import中的路径 并非全局 全局提示可以用 webstorm resource root设置为 app 解决
+      // 'stylesheets': path.join(ROOT_PATH,'app/stylesheets'),
+      // 'images': path.join(ROOT_PATH,'app/images'),
+      // 'icons': path.join(ROOT_PATH,'app/icons'),
+      // 'fonts': path.join(ROOT_PATH,'app/fonts'),
+      // 'public': path.join(ROOT_PATH,'public')
+    },
   },
 
   module: {
