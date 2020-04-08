@@ -1,24 +1,23 @@
-var replace = require('gulp-replace');
-var path = require("path");
-var fs = require("fs");
-var process = require("process");
+const replace = require('gulp-replace');
+const path = require("path");
+const fs = require("fs");
+const process = require("process");
 
-var gulp = require('gulp');
-var del = require('del');
-var ejs = require("gulp-ejs");
+const gulp = require('gulp');
+const del = require('del');
+
 const rename = require('gulp-rename')
 const debug = require('gulp-debug');
-var sass = require('./gulp-inline-plugin/gulp-sass');
-var csso = require('gulp-csso');
-process.env.NODE_ENV = 'production';
 
+const gulpConnect = require('gulp-connect');
+const ejs = require("gulp-ejs");
+
+process.env.IS_WATCH_FILE = 'true';
 const webpack = require('webpack');
-const config = require('./webpack.config')
-var RevAll = require("gulp-rev-all");
+const config = require('./webpack.config');
 
+var sass = require('./gulp-inline-plugin/gulp-sass');
 sass.compiler = require('sass');
-var gulpConnect = require('gulp-connect');
-
 
 function clean() {
   return del(['dist', 'temp', 'cdn']);
@@ -31,6 +30,7 @@ const shortPathKV = {
   'fonts/': '/asset/font/',
   'public/': '/',
 }
+
 var manifest;
 
 function render() {
@@ -64,10 +64,11 @@ function render() {
     .pipe(gulp.dest("dist"));
 }
 
+// 所有从gulp取到的文件路径均为 \
 function cssFileNameBuilder(fileName) {
   // 取views以下层级 格式为 pages.文件夹.文件名.css
   return '/asset/css/pages.'
-    + fileName.replace(path.resolve() + '\\app\\views\\', '').replace('.html', '').split('/').join('.')
+    + fileName.replace(path.resolve() + '\\app\\views\\', '').replace('.html', '').split('\\').join('.')
     + '.css';
 }
 
@@ -80,9 +81,9 @@ function jsTagWrapper(src) {
 function jsFileNameFind(fileName) {
   try {
     // pages.文件夹.文件名 去 webpack stats里去找
-    var pageKey = 'pages.' + fileName.replace(path.resolve() + '\\app\\views\\', '').replace('.html', '').split('/').join('.');
+    var pageKey = 'pages.' + fileName.replace(path.resolve() + '\\app\\views\\', '').replace('.html', '').split('\\').join('.');
     return manifest.entrypoints[pageKey].assets.map(function (src) {
-      if(path.extname(src) == '.map') return '';
+      if (path.extname(src) == '.map') return '';
       return jsTagWrapper('/asset/js/' + src);
     }).join('');
   } catch (e) {
@@ -95,12 +96,6 @@ function sassTask() {
     'app/stylesheets/pages/**/*.scss',
     'app/stylesheets/application.scss'], {base: path.join(process.cwd(), './app/stylesheets')})
     .pipe(sass().on('error', sass.logError))
-    .pipe(csso({
-      restructure: false,
-      sourceMap: true,
-      debug: true
-    }))
-    .pipe(replace('url(images/', 'url(/asset/img/'))
     .pipe(rename(function (path) {
       var dirnameTmp = path.dirname;
       path.dirname = "asset/css";
@@ -109,6 +104,8 @@ function sassTask() {
         path.basename = prefix + '.' + path.basename;
       }
     }))
+    .pipe(replace(/url\("images\/(.*?)"\);/, 'url(/asset/img/$1);'))
+    .pipe(replace(/url\(images\/(.*?)\);/, 'url(/asset/img/$1);'))
     .pipe(gulp.dest('dist'))
 }
 
@@ -147,18 +144,9 @@ function webpackTask() {
 
 function connect() {
   return gulpConnect.server({
-    root: 'cdn',
+    root: 'dist',
     index: 'homepage.html'
   });
-}
-
-function revTask() {
-  return gulp.src(["dist/**", '!dist/asset/js/**/*.*'])
-    .pipe(RevAll.revision({dontRenameFile: [".html"]}))
-    .pipe(gulp.src(['dist/asset/js/**/*.*'],{base: path.join(process.cwd(), './dist')}))
-    .pipe(gulp.dest("cdn"))
-    .pipe(RevAll.manifestFile())
-    .pipe(gulp.dest('dist'))
 }
 
 var assetTask = gulp.parallel(
@@ -169,16 +157,23 @@ var assetTask = gulp.parallel(
   sassTask,
   webpackTask);
 
-var build = gulp.series(clean, gulp.parallel(connect,gulp.series(assetTask, render, revTask)));
+var watch = gulp.parallel(
+  // 图标 图片 字体 更改后直接改名移动
+  // sass更改后需要编译当前以及更改的sass
+  // ejs更改后需要编译当前以及依赖的ejs
+  () => gulp.watch('app/stylesheets/**/*.scss', sassTask),
+  () => gulp.watch('app/views/**/*.ejs', render),
+  () => gulp.watch('app/icons/**/*.*', assetTaskBuilder('icons', 'icons')),
+  () => gulp.watch('app/fonts/**/*.*', assetTaskBuilder('fonts', 'fonts')),
+  () => gulp.watch('app/public/**/*.*', publicPathTask),
+  () => gulp.watch('app/images/**/*.*', assetTaskBuilder('images', 'img')),
+)
+
+
+var build = gulp.series(clean, gulp.parallel(connect, gulp.series(assetTask, render, watch)));
 
 exports.build = build;
 /*
  * Define default task that can be called by just running `gulp` from cli
  */
 exports.default = build;
-
-// "entrypoints
-//   "pages.about.cache
-//       "runtime.bundle.js",
-//       "pages.about.cache.chunk.js"
-//  

@@ -1,1 +1,1 @@
-console.log('当前页面没有js被选中 载入默认js')
+console.log('这是一个所有页面都会引用的main')

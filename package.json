@@ -4,11 +4,11 @@
   "description": "jquery website tempalte build with gulp and webpack.",
   "main": "none",
   "scripts": {
-    "dev": "gulp --gulpfile config/gulpfile.js --cwd ./",
+    "dev": "gulp --gulpfile config/gulpfile-develop.js --cwd ./",
     "build": "gulp --gulpfile config/gulpfile-production.js --cwd ./",
-    "webpack": "webpack --config config/webpack.config.js",
-    "dev-server": "nodemon -w \"config/webpack.config.js\" --exec \"webpack-dev-server --config config/webpack.config.js\"",
-    "webpack-prod": "cross-env NODE_ENV=production webpack --config config/webpack.config.js"
+    "webpack-cli": "webpack --config config/webpack.config.js",
+    "webpack-prod": "cross-env NODE_ENV=production webpack --config config/webpack.config.js",
+    "webpack-report": "cross-env WEBPACK_REPORT=true webpack --config config/webpack.config.js"
   },
   "keywords": [
     "gulp",

@@ -8,7 +8,7 @@ const del = require('del');
 var gulpif = require('gulp-if');
 
 const rename = require('gulp-rename')
-const debug = require('gulp-debug');
+// const debug = require('gulp-debug');
 
 const gulpConnect = require('gulp-connect');
 const htmlmin = require('gulp-htmlmin');
@@ -44,7 +44,7 @@ function render() {
     'app/views/**/*.ejs',
     '!app/views/**/_*.ejs',
   ])
-    .pipe(debug({title: 'handler html:'}))
+    // .pipe(debug({title: 'handler html:'}))
     .pipe(ejs())
     .pipe(rename({extname: '.html'}))
     .pipe(replace(/(<link.*?href="|<img.*?src=")(.*?)(".*?>)/g, function (match, start, shortPath, end, offset, string) {
@@ -73,7 +73,7 @@ function render() {
 function cssFileNameBuilder(fileName) {
   // 取views以下层级 格式为 pages.文件夹.文件名.css
   return '/asset/css/pages.'
-    + fileName.replace(path.resolve() + '\\app\\views\\', '').replace('.html', '').split('/').join('.')
+    + fileName.replace(path.resolve() + '\\app\\views\\', '').replace('.html', '').split('\\').join('.')
     + '.css';
 }
 
@@ -86,7 +86,7 @@ function jsTagWrapper(src) {
 function jsFileNameFind(fileName) {
   try {
     // pages.文件夹.文件名 去 webpack stats里去找
-    var pageKey = 'pages.' + fileName.replace(path.resolve() + '\\app\\views\\', '').replace('.html', '').split('/').join('.');
+    var pageKey = 'pages.' + fileName.replace(path.resolve() + '\\app\\views\\', '').replace('.html', '').split('\\').join('.');
     return manifest.entrypoints[pageKey].assets.map(function (src) {
       if (path.extname(src) == '.map') return '';
       return jsTagWrapper('/asset/js/' + src);

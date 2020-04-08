@@ -10,10 +10,8 @@ const ROOT_PATH = path.resolve(__dirname, '..');
 const CACHE_PATH = process.env.WEBPACK_CACHE_PATH || path.join(ROOT_PATH, 'tmp/cache');
 const IS_PRODUCTION = process.env.NODE_ENV === 'production';
 
-const IS_DEV_SERVER = process.argv.join(' ').indexOf('webpack-dev-server') !== -1;
-const DEV_SERVER_HOST = process.env.DEV_SERVER_HOST || 'localhost';
-const DEV_SERVER_PORT = parseInt(process.env.DEV_SERVER_PORT, 10) || 3808;
-const DEV_SERVER_LIVERELOAD = IS_DEV_SERVER && process.env.DEV_SERVER_LIVERELOAD !== 'false';
+const IS_WATCH_FILE = process.env.IS_WATCH_FILE === 'true';
+
 const WEBPACK_REPORT = process.env.WEBPACK_REPORT;
 const NO_COMPRESSION = process.env.NO_COMPRESSION;
 const NO_SOURCEMAPS = process.env.NO_SOURCEMAPS;
@@ -126,7 +124,7 @@ module.exports = {
       },
     },
   },
-
+  watch: IS_WATCH_FILE,
   plugins: [
     // manifest filename must match config.webpack.manifest_filename
     // webpack-rails only needs assetsByChunkName to function properly
@@ -155,37 +153,7 @@ module.exports = {
     
     // compression can require a lot of compute time and is disabled in CI
     IS_PRODUCTION && !NO_COMPRESSION && new CompressionPlugin(),
-
-    // WatchForChangesPlugin
-    // TODO: publish this as a separate plugin
-    IS_DEV_SERVER && {
-      apply(compiler) {
-        compiler.hooks.emit.tapAsync('WatchForChangesPlugin', (compilation, callback) => {
-          const missingDeps = Array.from(compilation.missingDependencies);
-          const nodeModulesPath = path.join(ROOT_PATH, 'node_modules');
-          const hasMissingNodeModules = missingDeps.some(
-            file => file.indexOf(nodeModulesPath) !== -1,
-          );
-
-          // watch for changes to missing node_modules
-          if (hasMissingNodeModules) compilation.contextDependencies.add(nodeModulesPath);
-
-          // watch for changes to automatic entrypoints
-          watchAutoEntries.forEach(watchPath => compilation.contextDependencies.add(watchPath));
-
-          // report our auto-generated bundle count
-          console.log(
-            `${autoEntriesCount} entries from '/pages' automatically added to webpack output.`,
-          );
-
-          callback();
-        });
-      },
-    },
-
-    // enable HMR only in webpack-dev-server
-    DEV_SERVER_LIVERELOAD && new webpack.HotModuleReplacementPlugin(),
-
+    
     // optionally generate webpack bundle analysis
     WEBPACK_REPORT &&
       new BundleAnalyzerPlugin({
@@ -196,20 +164,7 @@ module.exports = {
         statsFilename: path.join(ROOT_PATH, 'webpack-report/stats.json'),
       }),
   ].filter(Boolean),
-
-  devServer: {
-    host: DEV_SERVER_HOST,
-    port: DEV_SERVER_PORT,
-    disableHostCheck: true,
-    headers: {
-      'Access-Control-Allow-Origin': '*',
-      'Access-Control-Allow-Headers': '*',
-    },
-    stats: 'errors-only',
-    hot: DEV_SERVER_LIVERELOAD,
-    inline: DEV_SERVER_LIVERELOAD,
-  },
-
+  
   devtool: NO_SOURCEMAPS ? false : devtool,
 
   // sqljs requires fs
