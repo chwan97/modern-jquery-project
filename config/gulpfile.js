@@ -10,11 +10,14 @@ const rename = require('gulp-rename')
 const debug = require('gulp-debug');
 var sass = require('gulp-sass');
 var csso = require('gulp-csso');
+process.env.NODE_ENV = 'production';
+
 const webpack = require('webpack');
 const config = require('./webpack.config')
 var RevAll = require("gulp-rev-all");
 
 sass.compiler = require('node-sass');
+var gulpConnect = require('gulp-connect');
 
 
 function clean() {
@@ -22,11 +25,11 @@ function clean() {
 }
 
 const shortPathKV = {
-  'stylesheets/': 'asset/css/',
-  'images/': 'asset/img/',
-  'icons/': 'asset/icon/',
-  'fonts/': 'asset/font/',
-  'public/': '',
+  'stylesheets/': '/asset/css/',
+  'images/': '/asset/img/',
+  'icons/': '/asset/icon/',
+  'fonts/': '/asset/font/',
+  'public/': '/',
 }
 var manifest;
 
@@ -63,7 +66,7 @@ function render() {
 
 function cssFileNameBuilder(fileName) {
   // 取views以下层级 格式为 pages.文件夹.文件名.css
-  return 'asset/css/pages.'
+  return '/asset/css/pages.'
     + fileName.replace(path.resolve() + '\\app\\views\\', '').replace('.html', '').split('/').join('.')
     + '.css';
 }
@@ -79,7 +82,8 @@ function jsFileNameFind(fileName) {
     // pages.文件夹.文件名 去 webpack stats里去找
     var pageKey = 'pages.' + fileName.replace(path.resolve() + '\\app\\views\\', '').replace('.html', '').split('/').join('.');
     return manifest.entrypoints[pageKey].assets.map(function (src) {
-      return jsTagWrapper('asset/js/' + src);
+      if(path.extname(src) == '.map') return '';
+      return jsTagWrapper('/asset/js/' + src);
     }).join('');
   } catch (e) {
     return '<!-- js no find -->'
@@ -96,7 +100,7 @@ function sassTask() {
       sourceMap: true,
       debug: true
     }))
-    .pipe(replace('url(images/', 'url(asset/img/'))
+    .pipe(replace('url(images/', 'url(/asset/img/'))
     .pipe(rename(function (path) {
       var dirnameTmp = path.dirname;
       path.dirname = "asset/css";
@@ -140,9 +144,18 @@ function webpackTask() {
   })
 }
 
+
+function connect() {
+  return gulpConnect.server({
+    root: 'cdn',
+    index: 'homepage.html'
+  });
+}
+
 function revTask() {
   return gulp.src(["dist/**", '!dist/asset/js/**/*.*'])
     .pipe(RevAll.revision({dontRenameFile: [".html"]}))
+    .pipe(gulp.src(['dist/asset/js/**/*.*'],{base: path.join(process.cwd(), './dist')}))
     .pipe(gulp.dest("cdn"))
     .pipe(RevAll.manifestFile())
     .pipe(gulp.dest('dist'))
@@ -156,8 +169,7 @@ var assetTask = gulp.parallel(
   sassTask,
   webpackTask);
 
-// var build = gulp.series(clean, render, gulp.parallel(styles, scripts));
-var build = gulp.series(clean, assetTask, render, revTask);
+var build = gulp.series(clean, gulp.parallel(connect,gulp.series(assetTask, render, revTask)));
 
 exports.build = build;
 /*
