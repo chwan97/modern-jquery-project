@@ -8,7 +8,7 @@ var del = require('del');
 var ejs = require("gulp-ejs");
 const rename = require('gulp-rename')
 const debug = require('gulp-debug');
-var sass = require('gulp-sass');
+var sass = require('./gulp-inline-plugin/gulp-sass');
 var csso = require('gulp-csso');
 process.env.NODE_ENV = 'production';
 
@@ -16,7 +16,7 @@ const webpack = require('webpack');
 const config = require('./webpack.config')
 var RevAll = require("gulp-rev-all");
 
-sass.compiler = require('node-sass');
+sass.compiler = require('sass');
 var gulpConnect = require('gulp-connect');
 
 
