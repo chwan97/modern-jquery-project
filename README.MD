@@ -86,13 +86,14 @@ string为模板
 <%- %> 转义输出
 <% %> 嵌入js语句
 配置项options有
+```
 [escape] (RegExp): "escape" 分隔符.
 [evaluate=] (RegExp): "evaluate" 分隔符.
 [imports] (Object): 导入对象到模板中作为自由变量。
 [interpolate] (RegExp): "interpolate" 分隔符。
 [sourceURL] (string): 模板编译的来源URL。
 [variable] (string): 数据对象的变量名。
-
+```
 gulp-template 模板插件虽然有最多的下载，只有这些简单的语法，不支持include，所以使用gulp-ejs。
 
 gitlab打包后的js为 
@@ -103,7 +104,7 @@ gitlab打包后的js为
 
 这是通过webpack4的optimization.splitChunks配置项拆分出来的模块。
 chunk的拆分依据是webpack生成的依赖图分析，gitlab的相关配置项为
-
+```
 optimization: {
     runtimeChunk: 'single', // 单独拆分webpack运行时
     splitChunks: {
@@ -129,7 +130,7 @@ optimization: {
       },
     },
   },
- 
+```
 相对路径支持： 
 一般出现相对路径的情形为 ejs中相对路径 scss中相对路径，如果支持就不太好处理。
 所以可以用一种简易的绝对路径来支持，比如默认替换一些引用路径。
