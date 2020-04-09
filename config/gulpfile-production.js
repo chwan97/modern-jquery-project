@@ -167,7 +167,10 @@ function connect() {
 
 function revTask() {
   return gulp.src(["dist/**", '!dist/asset/js/**/*.*'])
-    .pipe(RevAll.revision({dontRenameFile: [".html"]}))
+    .pipe(RevAll.revision({
+      dontRenameFile: [ /^.*html$/],
+      dontUpdateReference: [ /^.*html$/],
+    }))
     .pipe(gulp.src(['dist/asset/js/**/*.*'], {base: path.join(process.cwd(), './dist')}))
     .pipe(gulp.dest("cdn"))
     .pipe(RevAll.manifestFile())
