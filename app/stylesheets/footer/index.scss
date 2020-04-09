@@ -1,0 +1,59 @@
+.footer {
+  width: 100%;
+  background-color: #f2f2f5;
+  padding: 20px 0;
+}
+
+.footer a,
+.footer a:active,
+.footer a:link,
+.footer a:hover,
+.footer a:visited
+{
+  color: black;
+  text-decoration: none;
+}
+
+.footer .copyright {
+  text-align: center;
+  font-size: 12px;
+  color: #5a5a5a;
+}
+
+.footer .copyright a{
+  position: relative;
+  color: #5a5a5a;
+}
+
+.footer .copyright a,
+.footer .copyright a:active,
+.footer .copyright a:link,
+.footer .copyright a:hover,
+.footer .copyright a:visited
+{
+  color: #5a5a5a;
+}
+
+.footer .copyright a::before  {
+  background: url('images/license.png');
+  content: " ";
+  width: 19px;
+  height: 19px;
+  position: absolute;
+  left: -26px;
+  top: 1px;
+}
+
+.footer .logo{
+  width: 200px;
+}
+
+.footer h2 {
+  font-size: 14px;
+  color: #464646;
+}
+
+.footer p,
+.footer li {
+  font-size: 16px;
+}

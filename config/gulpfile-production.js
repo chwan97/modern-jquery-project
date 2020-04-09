@@ -141,6 +141,17 @@ function publicPathTask() {
 function webpackTask() {
   return new Promise(function (resolve, inject) {
     webpack(config, function (err, stats) {
+      if(err){
+        inject(err);
+        return;
+      }
+      var jsonStats = stats ? stats.toJson() || {} : {};
+      var errors = jsonStats.errors || [];
+      if (errors.length) {
+        var errorMessage = errors.join('\n');
+        inject(new Error(errorMessage));
+        return;
+      }
       resolve();
     })
   })
@@ -150,7 +161,7 @@ function webpackTask() {
 function connect() {
   return gulpConnect.server({
     root: 'cdn',
-    index: 'homepage.html'
+    index: 'index.html'
   });
 }
 

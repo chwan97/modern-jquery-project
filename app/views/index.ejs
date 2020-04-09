@@ -1,0 +1,31 @@
+<!doctype html>
+<html lang="zh">
+<head>
+  <%-
+  include('./layouts/head/_head', {
+  title: '水泥批发',
+  }); %>
+</head>
+<body>
+<%- include('./layouts/header/_header'); %>
+
+<div class="main">
+  <div class="swiper-container">
+    <div class="swiper-wrapper">
+      <div class="swiper-slide">精品水泥</div>
+      <div class="swiper-slide">良心价格</div>
+      <div class="swiper-slide">按时交易</div>
+      <div class="swiper-slide">欺一罚三</div>
+      <div class="swiper-slide">三十年信誉</div>
+    </div>
+    <div class="swiper-button-next"></div>
+    <div class="swiper-button-prev"></div>
+    <div class="swiper-pagination"></div>
+  </div>
+</div>
+
+
+<%- include('./layouts/footer/_footer'); %>
+<%- include('./layouts/scriptTags/_page-script-tag.ejs'); %>
+</body>
+</html>

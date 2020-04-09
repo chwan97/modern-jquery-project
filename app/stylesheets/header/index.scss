@@ -1,0 +1,74 @@
+.header {
+  top: 0;
+  width: 100%;
+  box-shadow: 0px 2px 3px 0px #d5d5d5;
+}
+
+.header a,
+.header a:active,
+.header a:link,
+.header a:hover,
+.header a:visited
+{
+  color: black;
+  text-decoration: none;
+}
+
+.header nav .logo {
+  font-size: 0;
+}
+
+.header nav .logo img {
+  width: 40px;
+  height: 40px;
+  vertical-align: middle;
+}
+
+.header nav>span {
+  display: inline-block;
+  position: relative;
+  font-size: 18px;
+  line-height: 55px;
+  margin-right: 40px;
+  font-weight: bold;
+  vertical-align: middle;
+}
+
+.header nav {
+  height: 60px;
+  line-height: 60px;
+  margin: 0 auto;
+  width: 1000px;
+}
+
+.header .menu-list {
+  display: none;
+  position: absolute;
+  line-height: 1.2em;
+  z-index: 999;
+  left: -21px;
+  padding: 5px 20px 10px;
+  border: 1px solid #f2f2f2;
+  border-top: none;
+  box-shadow: 3px 2px 3px 0px #cfcfd3;
+  background-color: #fff;
+  width: 120px;
+}
+
+.header .menu-list a {
+  line-height: 35px;
+}
+
+.header .menu-list li {
+  height: 35px;
+  box-sizing: border-box;
+  text-align: left;
+}
+
+.header .menu-list li:hover {
+  border-bottom: 1px solid black;
+}
+
+.header nav span:hover .menu-list {
+  display: block;
+}

@@ -136,16 +136,27 @@ function publicPathTask() {
 function webpackTask() {
   return new Promise(function (resolve, inject) {
     webpack(config, function (err, stats) {
+      if (err) {
+        process.stderr.write(`${err}\n`);
+      }
+      var jsonStats = stats ? stats.toJson() || {} : {};
+      var errors = jsonStats.errors || [];
+      if (errors.length) {
+        var errorMessage = errors.join('\n');
+        process.stderr.write(`${errorMessage}\n`);
+      }
+      if(!err && !errors.length){
+        process.stderr.write(`webpack compiler ok.\n`);
+      }
       resolve();
     })
   })
 }
 
-
 function connect() {
   return gulpConnect.server({
     root: 'dist',
-    index: 'homepage.html'
+    index: 'index.html'
   });
 }
 
@@ -165,7 +176,7 @@ var watch = gulp.parallel(
   () => gulp.watch('app/views/**/*.ejs', render),
   () => gulp.watch('app/icons/**/*.*', assetTaskBuilder('icons', 'icons')),
   () => gulp.watch('app/fonts/**/*.*', assetTaskBuilder('fonts', 'fonts')),
-  () => gulp.watch('app/public/**/*.*', publicPathTask),
+  () => gulp.watch('public/**/*.*', publicPathTask),
   () => gulp.watch('app/images/**/*.*', assetTaskBuilder('images', 'img')),
 )
 
